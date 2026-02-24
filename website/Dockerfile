@@ -8,5 +8,4 @@ COPY . /var/www/html/
 EXPOSE 8080
 # Start Apache server
 
-
 CMD ["/bin/bash", "-c", "/usr/sbin/apache2ctl -D FOREGROUND"]
