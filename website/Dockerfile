@@ -7,5 +7,5 @@ COPY . /var/www/html/
 # Expose HTTP port
 EXPOSE 8080
 # Start Apache server
-# Webhook
+# Webhook trigger
 CMD ["/bin/bash", "-c", "/usr/sbin/apache2ctl -D FOREGROUND"]
