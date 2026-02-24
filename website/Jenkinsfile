@@ -1,0 +1,53 @@
+pipeline {
+    agent { label 'slave-node' }
+
+    environment {
+        // REPO_URL = 'https://github.com/v1999-tech/PHP-proj.git'
+        CONTAINER_NAME = 'php_webapp'
+        IMAGE_NAME = 'php_webapp_image'
+    }
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                checkout scm
+               // sh '''
+                //if [ ! -d app ]; then
+                  //  git clone ${REPO_URL} app
+                //else
+                  //  cd app && git pull
+                //fi
+                //'''
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                cd app
+                docker build -t ${IMAGE_NAME} ./website/
+                '''
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                script {
+                    try {
+                        sh '''
+                        docker stop ${CONTAINER_NAME} || true
+                        docker rm ${CONTAINER_NAME} || true
+                        docker run -d --name ${CONTAINER_NAME} -p 8080:80 ${IMAGE_NAME}
+                        '''
+                    } catch (Exception e) {
+                        sh '''
+                        docker rm -f ${CONTAINER_NAME} || true
+                        '''
+                        error "Deployment failed. Rollback executed."
+                    }
+                }
+            }
+        }
+    }
+}
