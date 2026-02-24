@@ -5,7 +5,7 @@ FROM devopsedu/webapp
 COPY . /var/www/html/
 
 # Expose HTTP port
-EXPOSE 80
+EXPOSE 8080
 # Start Apache server
 
 
