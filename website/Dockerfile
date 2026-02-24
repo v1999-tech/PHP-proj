@@ -9,4 +9,4 @@ EXPOSE 8080
 # Start Apache server
 
 
-#CMD ["apache2-foreground"]
+CMD ["/bin/bash", "-c", "/usr/sbin/apache2ctl -D FOREGROUND"]
