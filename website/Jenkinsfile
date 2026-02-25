@@ -12,8 +12,8 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                checkout scm
-                //git branch: 'master', url: 'https://github.com/v1999-tech/PHP-proj.git'
+                //checkout scm
+                git branch: 'master', url: 'https://github.com/v1999-tech/PHP-proj.git'
                // sh '''
                 //if [ ! -d app ]; then
                   //  git clone ${REPO_URL} app
