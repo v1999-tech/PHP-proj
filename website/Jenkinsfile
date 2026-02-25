@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         // REPO_URL = 'https://github.com/v1999-tech/PHP-proj.git'
+        //webhhook
         CONTAINER_NAME = 'php_webapp'
         IMAGE_NAME = 'php_webapp_image'
     }
