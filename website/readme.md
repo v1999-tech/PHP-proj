@@ -1,21 +1,85 @@
-# Simple PHP Website
+This project implements a complete Continuous Integration and Continuous Deployment (CI/CD) pipeline to automate application deployment using Jenkins, Ansible, and Docker.
 
-I put together this project while introducing a friend of mine to PHP. I decided to clean it up a bit and put it on Github so anyone new to PHP can have a taste of a very simple and minimal website built with PHP.
+The pipeline is triggered automatically when code is pushed to the GitHub master branch.
 
-This project is meant for absolute beginners. I've intentionally kept it the most minimal possible while introducing some separation of concerns.
+---
 
-## Concepts
+## 🏢 Business Requirement
 
-The project covers these concepts:
+- Automate build and deployment process
+- Reduce manual intervention
+- Enable faster and reliable releases
+- Provision test server automatically
+- Deploy containerized PHP application
 
- * PHP variables
- * PHP arrays
- * PHP functions
- * Pretty links (/about) with fallback to query string (?page=about)
- * Basic example of separation of concerns (functionality, content, template)
+---
 
-If you are a beginner and would like me to explain something in the code, or if you already know PHP and have some recommendation for the project, plese [create an issue](https://github.com/banago/simple-php-website/issues/new) or hit me up on Twitter [@banago](https://twitter.com/banago).
+## 🛠️ Tools & Technologies Used
 
-## Lisence
+- Git – Version Control
+- Jenkins – CI/CD Automation
+- Docker – Containerization
+- Ansible – Configuration Management
+- Puppet Agent – Installed on test server
+- Ubuntu Linux – Virtual Machines
 
-MIT
+---
+
+## 🏗️ Architecture
+Developer 
+↓ 
+GitHub (Master Branch) 
+↓ 
+Jenkins (Master VM) 
+↓
+Ansible 
+↓ 
+Test Server (Slave VM) 
+↓ 
+Docker Container (PHP Application)
+
+
+## 🖥️ Infrastructure Setup
+
+### Master VM
+- Jenkins Installed
+- Ansible Installed
+- Git Installed
+- SSH Configured
+
+### Slave VM (Test Server)
+- Python Installed
+- OpenSSH Installed
+- Git Installed
+- Docker Installed via Ansible
+
+---
+
+## 🔄 CI/CD Pipeline Stages
+
+### Stage 1 – Install Puppet Agent
+- Puppet agent installed on slave node
+
+### Stage 2 – Install Docker via Ansible
+- Ansible playbook executed from Jenkins
+- Docker installed automatically on test server
+
+### Stage 3 – Build & Deploy Application
+- Pull latest code from GitHub
+- Build Docker image
+- Run container on test server
+
+### Post Action (Failure Handling)
+- If deployment fails, running container is automatically removed
+
+---
+
+##  Project Structure
+project/ 
+│ 
+├── Dockerfile 
+├── Jenkinsfile 
+├── ansible/   
+└── docker.yml 
+├── application source code 
+└── README.md
