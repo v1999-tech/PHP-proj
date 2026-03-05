@@ -13,8 +13,8 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Show System Info
+      - name: Test Runner
         run: |
+          echo "Code pushed successfully"
           hostname
           whoami
-          pwd
