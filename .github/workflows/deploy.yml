@@ -1,0 +1,20 @@
+name: Deploy in VM
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Show System Info
+        run: |
+          hostname
+          whoami
+          pwd
