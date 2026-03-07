@@ -21,6 +21,11 @@ jobs:
       - name: Build Docker Image
         run: docker build -t myapp:${{ github.run_number }} ./website
 
+      - name: Scan Docker Image with Trivy 
+        uses: aquqsecurity/trivy-action@master
+	with:
+	   image-ref: myapp:${{ github.run_number }}
+
       - name: Tag Image
         run: docker tag myapp:${{ github.run_number }} myapp:latest
 
