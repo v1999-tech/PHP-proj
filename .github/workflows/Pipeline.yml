@@ -36,3 +36,8 @@ jobs:
 
       - name: Run New Container
         run: docker run -d -p 8081:80 --name mycontainer myapp:latest
+
+      - name: Deploy to Kubernetes
+        run: |
+              kubectl apply -f k8s/deployment.yml
+              kubectl apply -f k8s/service.yml
