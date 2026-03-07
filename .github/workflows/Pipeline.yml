@@ -1,0 +1,31 @@
+name: CI-CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  build:
+    runs-on: self-hosted
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Show Files
+        run: ls -la
+
+      - name: Build Docker Image
+        run: docker build -t myapp:${{ github.run_number }} ./website
+
+      - name: Tag Image
+        run: docker tag myapp:${{ github.run_number }} myapp:latest
+
+      - name: Stop Old Container
+        run: docker rm -f mycontainer || true
+
+      - name: Run New Container
+        run: docker run -d -p 8081:80 --name mycontainer myapp:latest
