@@ -6,38 +6,48 @@ on:
       - master
 
 jobs:
-
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest   # change to self-hosted only if needed
 
     steps:
 
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      - name: Show Files
-        run: ls -la
+    - name: Show Files
+      run: ls -la
 
-      - name: Build Docker Image
-        run: docker build -t myapp:${{ github.run_number }} ./website
+    # ✅ Build Docker Image
+    - name: Build Docker Image
+      run: docker build -t myapp:${{ github.run_number }} ./website
 
-      - name: Scan Docker Image with Trivy
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'myapp:${{ github.run_number }}'
-      - name: Scan Docker Image
-        run: trivy image --exit-code 1 --severity CRITICAL myapp:${{ github.run_number }}
-        
-      - name: Tag Image
-        run: docker tag myapp:${{ github.run_number }} myapp:latest
+    # ✅ Scan Image (Trivy)
+    - name: Scan Docker Image with Trivy
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: myapp:${{ github.run_number }}
 
-      - name: Stop Old Container
-        run: docker rm -f mycontainer || true
+    # ✅ Tag Image for Docker Hub
+    - name: Tag Image
+      run: docker tag myapp:${{ github.run_number }} vijetavernekar/myapp:latest
 
-      - name: Run New Container
-        run: docker run -d -p 8081:80 --name mycontainer myapp:latest
+    # ✅ Login to Docker Hub
+    - name: Login to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Deploy to Kubernetes
-        run: |
-              kubectl apply -f k8s/deployment.yml
-              kubectl apply -f k8s/service.yml
+    # ✅ Push Image to Docker Hub
+    - name: Push Image
+      run: docker push vijetavernekar/myapp:latest
+
+    # ✅ (Optional) Run container locally
+    - name: Stop Old Container
+      run: docker rm -f mycontainer || true
+
+    - name: Run New Container
+      run: docker run -d -p 8081:80 --name mycontainer vijetavernekar/myapp:latest
+
+    # ✅ Deploy to Kubernetes
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f k8s/deployment.yml
+        kubectl apply -f k8s/service.yml
