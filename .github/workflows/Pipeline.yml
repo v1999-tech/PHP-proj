@@ -7,51 +7,32 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest   # change to self-hosted only if needed
+    runs-on: self-hosted
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.run_number }} ./website
 
-    - name: Show Files
-      run: ls -la
+      - name: Tag Latest Image
+        run: docker tag ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/myapp:latest
 
-    # ✅ Build Docker Image
-    - name: Build Docker Image
-      run: docker build -t myapp:${{ github.run_number }} ./website
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    # ✅ Scan Image (Trivy)
-    - name: Scan Docker Image with Trivy
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: myapp:${{ github.run_number }}
+      - name: Push Image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.run_number }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
 
-    # ✅ Tag Image for Docker Hub
-    - name: Tag Image
-      run: docker tag myapp:${{ github.run_number }} vijetavernekar/myapp:latest
+      - name: Scan Image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ secrets.DOCKER_USERNAME }}/myapp:latest'
 
-    # ✅ Login to Docker Hub
-    - name: Login to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    # ✅ Push Image to Docker Hub
-    - name: Push Image
-      run: docker push vijetavernekar/myapp:latest
-
-    # ✅ (Optional) Run container locally
-    - name: Stop Old Container
-      run: docker rm -f mycontainer || true
-
-    - name: Run New Container
-      run: docker run -d -p 8081:80 --name mycontainer vijetavernekar/myapp:latest
-
-    # ✅ Deploy to Kubernetes
-    - name: Deploy to Kubernetes
-      run: |
-        export KUBECONFIG=$HOME/.kube/config
-        kubectl config use-context minikube
-        kubectl cluster-info
-        kubectl get nodes
-        kubectl apply -f k8s/deployment.yml
-        kubectl apply -f k8s/service.yml
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yml
+          kubectl apply -f k8s/service.yml
