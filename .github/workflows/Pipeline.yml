@@ -49,5 +49,9 @@ jobs:
     # ✅ Deploy to Kubernetes
     - name: Deploy to Kubernetes
       run: |
+        export KUBECONFIG=$HOME/.kube/config
+        kubectl config use-context minikube
+        kubectl cluster-info
+        kubectl get nodes
         kubectl apply -f k8s/deployment.yml
         kubectl apply -f k8s/service.yml
