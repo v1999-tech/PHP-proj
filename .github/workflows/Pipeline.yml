@@ -28,7 +28,7 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
 
       - name: Run New Container
-        run: docker run -d -p 8081:80 --name mycontainer myapp:latest
+        run: docker run -d -p 8081:80 --name mycontainer vijetavernekar/myapp:latest
         
       - name: Scan Image with Trivy
         uses: aquasecurity/trivy-action@master
