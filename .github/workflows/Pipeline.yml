@@ -1,16 +1,16 @@
-name: CI-CD Pipeline
+name: CI-CD Pipeline     #name of the pipeline
 
 on:
-  push:
+  push:                  #runs when you push code
     branches:
-      - master
+      - master           #only triggers if code is pushed to master branch
 
 jobs:
-  build:
-    runs-on: self-hosted
+  build:                 #defines a job name build (pipeline can have multiple jobs)
+    runs-on: self-hosted    #pipeline runs on your own server/machine
 
-    steps:
-      - name: Checkout Code
+    steps:                #tasks  start executing one by one
+      - name: Checkout Code    #downnload github repo code into runner
         uses: actions/checkout@v3
 
       - name: Build Docker Image
