@@ -9,12 +9,14 @@ jobs:
   build:                 #defines a job name build (pipeline can have multiple jobs)
     runs-on: self-hosted    #pipeline runs on your own server/machine
 
-    steps:                #tasks  start executing one by one
+    steps:         #tasks  start executing one by one       
       - name: Checkout Code    #downnload github repo code into runner
         uses: actions/checkout@v3
 
-      - name: Build Docker Image
+      - name: Build Docker Image    #builds docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.run_number }} ./website
+        #docker build -> create docker image      -t -> tag      ${{ secrets.DOCKER_USERNAME }} -> secure docker hub username
+        #myapp -> image name     ${{ github.run_number }} -> unique version      ./website -> folder where dockerfile exists
 
       - name: Tag Latest Image
         run: docker tag ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/myapp:latest
