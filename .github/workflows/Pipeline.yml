@@ -25,20 +25,23 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
         #password comes from github secrets, avoids hardcoding the creds
         
-      - name: Push Image to Docker Hub
-        run: |
+      - name: Push Image to Docker Hub      #upload image to docker hub
+        run: |                              # " | " -> runs multiple commands line by line
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.run_number }}
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
 
-      - name: Run New Container
+      - name: Run New Container             #runs container on server
         run: docker run -d -p 8081:80 --name mycontainer vijetavernekar/myapp:latest
+        # -d -> detached mode           -p 8081:80 -> browser:8080  container:80      --name my container -> container name
+        # http://<server-ip>:8081
         
-      - name: Scan Image with Trivy
+      - name: Scan Image with Trivy         # scans docker images for vulnerabilities 
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ secrets.DOCKER_USERNAME }}/myapp:latest'
 
-      - name: Deploy to Kubernetes
+      - name: Deploy to Kubernetes          #deploys app to K8s
         run: |
-          kubectl apply -f k8s/deployment.yml
-          kubectl apply -f k8s/service.yml
+          kubectl apply -f k8s/deployment.yml         # deployment.yml -> creates pods
+          kubectl apply -f k8s/service.yml            # service.yml -> exposes app
+          
