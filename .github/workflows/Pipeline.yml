@@ -18,12 +18,13 @@ jobs:
         #docker build -> create docker image      -t -> tag      ${{ secrets.DOCKER_USERNAME }} -> secure docker hub username
         #myapp -> image name     ${{ github.run_number }} -> unique version      ./website -> folder where dockerfile exists
 
-      - name: Tag Latest Image
+      - name: Tag Latest Image        #creates another tag (k8s will pull the lastest)
         run: docker tag ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.run_number }} ${{ secrets.DOCKER_USERNAME }}/myapp:latest
 
-      - name: Login to Docker Hub
+      - name: Login to Docker Hub        #logs into docker hub securely
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
+        #password comes from github secrets, avoids hardcoding the creds
+        
       - name: Push Image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.run_number }}
